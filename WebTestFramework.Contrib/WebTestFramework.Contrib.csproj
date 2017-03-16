@@ -55,6 +55,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequestPlugins\RawBodyRequestPlugin.cs" />
     <Compile Include="RequestPlugins\SetMethodRequestPlugin.cs" />
+    <Compile Include="Utils\TokenReplacer.cs" />
     <Compile Include="ValidationRules\JsonValidationRule.cs" />
   </ItemGroup>
   <ItemGroup>

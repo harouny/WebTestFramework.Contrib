@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel;
-using System.Text.RegularExpressions;
+using Microsoft.VisualStudio.QualityTools.WebTestFramework.Contrib.Utils;
 using Microsoft.VisualStudio.TestTools.WebTesting;
 
 namespace Microsoft.VisualStudio.QualityTools.WebTestFramework.Contrib.RequestPlugins
@@ -13,21 +13,10 @@ namespace Microsoft.VisualStudio.QualityTools.WebTestFramework.Contrib.RequestPl
 
         public override void PreRequest(object sender, PreRequestEventArgs e)
         {
-            base.PreRequest(sender, e);
-            var processedBody = BodyString;
-            var tokens = Regex.Matches(BodyString, @"{{(\w+)}}");
-            if (tokens.Count > 0)
-            {
-                foreach (Match token in tokens)
-                {
-                    processedBody = processedBody.Replace(token.Value,
-                        e.WebTest.Context[token.Groups[1].Value].ToString());
-                }
-            }
-            
+            base.PreRequest(sender, e);            
             e.Request.Body = new StringHttpBody
             {
-                BodyString = processedBody,
+                BodyString = TokenReplacer.Replace(BodyString, e.WebTest.Context),
                 ContentType = ContentType
             };
         }

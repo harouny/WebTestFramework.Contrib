@@ -21,31 +21,27 @@ namespace Microsoft.VisualStudio.QualityTools.WebTestFramework.Contrib.Validatio
         public override void Validate(object sender, ValidationEventArgs e)
         {
             var isValid = false;
-            if (e.Response.StatusCode == HttpStatusCode.OK
-                || e.Response.StatusCode == HttpStatusCode.Created)
+            try
             {
-                try
+                var responseJObject = JToken.Parse(e.Response.BodyString);
+                var jToken = responseJObject.SelectToken(JsonPath);
+                var actualValue = jToken.Value<string>();
+                if (!string.IsNullOrEmpty(ExactValue))
                 {
-                    var responseJObject = JToken.Parse(e.Response.BodyString);
-                    var jToken = responseJObject.SelectToken(JsonPath);
-                    var actualValue = jToken.Value<string>();
-                    if (!string.IsNullOrEmpty(ExactValue))
-                    {
-                        isValid = string.Equals(ExactValue, actualValue, StringComparison.InvariantCultureIgnoreCase);
-                    }
-                    else if(!string.IsNullOrEmpty(ValueRegex))
-                    {
-                        isValid = Regex.IsMatch(actualValue, ValueRegex);
-                    }
-                    else
-                    {
-                        throw new Exception($"either {nameof(ValueRegex)} or {nameof(ExactValue)} are required");
-                    }
+                    isValid = string.Equals(ExactValue, actualValue, StringComparison.InvariantCultureIgnoreCase);
                 }
-                catch (Exception exception)
+                else if(!string.IsNullOrEmpty(ValueRegex))
                 {
-                    Console.WriteLine(exception);
+                    isValid = Regex.IsMatch(actualValue, ValueRegex);
                 }
+                else
+                {
+                    e.Message = $"either {nameof(ValueRegex)} or {nameof(ExactValue)} are required";
+                }
+            }
+            catch (Exception exception)
+            {
+                e.Message = $"Error while validating Json path ({JsonPath}) value. {exception.Message}";
             }
             e.IsValid = isValid;
         }
