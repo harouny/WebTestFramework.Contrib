@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Net;
 using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.WebTesting;
 using Newtonsoft.Json.Linq;
